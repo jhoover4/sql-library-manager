@@ -95,3 +95,12 @@ input[type=text] {
 .error {
   color: rgb(236, 15, 15);
 }
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.pagination a {
+  margin: 0.5rem 0.5rem 0 0;
+}

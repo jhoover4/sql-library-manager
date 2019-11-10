@@ -1,21 +1,27 @@
 extends ../layout
 
 block content
-  h1= title
-  p 
-    a.button(href='/books/new') Create New Book
-  table
-    thead
-      tr
-        th Title
-        th Author
-        th Genre
-        th Year
-    tbody
-      each book in books
-        tr
-          td
-            a(href=`books/${book.id}`)= book.title
-          td= book.author
-          td= book.genre
-          td= book.year
+    h1= title
+    p
+        a.button(href='/books/new') Create New Book
+    table
+        thead
+            tr
+                th Title
+                th Author
+                th Genre
+                th Year
+        tbody
+            each book in books
+                tr
+                    td
+                        a(href=`books/${book.id}`)= book.title
+                    td= book.author
+                    td= book.genre
+                    td= book.year
+
+    p.pagination
+        - var i = 1;
+        while i <= pageCount
+            a.button(href=`/books?page=${i}`)= i
+            - i++

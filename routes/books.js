@@ -32,10 +32,19 @@ router.get(
     // TODO: Include a search file for the books listing page. Search should work for all fields. Should be case insensitive
     //  and good for partial matches
 
-    // TODO: Include pagination for the books listing page
-    const books = await Book.findAll({ order: [["title"]] });
+    const NUM_PER_PAGE = 10;
+    const currentPage = req.query.page ? req.query.page : 0;
+    const existingBooks = await Book.count();
 
-    res.render("books/index", { title: "Books", books });
+    const pageCount = Math.ceil(existingBooks / NUM_PER_PAGE);
+
+    const books = await Book.findAll({
+      order: [["title"]],
+      limit: NUM_PER_PAGE,
+      offset: (currentPage - 1) * NUM_PER_PAGE
+    });
+
+    res.render("books/index", { title: "Books", books, pageCount });
   })
 );
 
