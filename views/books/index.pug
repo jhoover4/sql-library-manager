@@ -2,8 +2,12 @@ extends ../layout
 
 block content
     h1= title
-    p
+    p.create-book
         a.button(href='/books/new') Create New Book
+
+    form.search
+        input(type="text", name="search", placeholder="Search on any book field")
+        button.button(type="submit") Search
     table
         thead
             tr

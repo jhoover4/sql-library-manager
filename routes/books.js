@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const Book = require("../models").Book;
+const Op = require("../models").Sequelize.Op;
 
 /**
  * Route callback function.
@@ -29,20 +30,36 @@ function asyncHandler(callback) {
 router.get(
   "/",
   asyncHandler(async (req, res) => {
-    // TODO: Include a search file for the books listing page. Search should work for all fields. Should be case insensitive
-    //  and good for partial matches
-
     const NUM_PER_PAGE = 10;
     const currentPage = req.query.page ? req.query.page : 0;
     const existingBooks = await Book.count();
+    let pageCount = Math.ceil(existingBooks / NUM_PER_PAGE);
 
-    const pageCount = Math.ceil(existingBooks / NUM_PER_PAGE);
+    const search = req.query.search;
 
-    const books = await Book.findAll({
-      order: [["title"]],
-      limit: NUM_PER_PAGE,
-      offset: (currentPage - 1) * NUM_PER_PAGE
-    });
+    let books;
+    if (search) {
+      pageCount = 0;
+      const sqlSearch = `%${search}%`;
+
+      books = await Book.findAll({
+        order: [["title"]],
+        where: {
+          [Op.or]: {
+            title: { [Op.like]: sqlSearch },
+            author: { [Op.like]: sqlSearch },
+            genre: { [Op.like]: sqlSearch },
+            year: { [Op.like]: sqlSearch }
+          }
+        }
+      });
+    } else {
+      books = await Book.findAll({
+        order: [["title"]],
+        limit: NUM_PER_PAGE,
+        offset: (currentPage - 1) * NUM_PER_PAGE
+      });
+    }
 
     res.render("books/index", { title: "Books", books, pageCount });
   })
@@ -135,8 +152,5 @@ router.post(
     }
   })
 );
-
-// TODO: Books/id not found should have a different error page than typical 404?
-// TODO: Setup a custom error handle middleware
 
 module.exports = router;
